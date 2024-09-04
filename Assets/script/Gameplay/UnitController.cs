@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using TMPro;
 using System.Collections;
 using System.Collections.Generic;
@@ -33,7 +34,7 @@ public class UnitController : MonoBehaviour
     [SerializeField] private GameObject panelWin;
     [SerializeField] private GameObject flag;
 
-    private bool gameWon = false; 
+    private bool gameWon = false;
 
     void Start()
     {
@@ -51,7 +52,7 @@ public class UnitController : MonoBehaviour
 
     void Update()
     {
-        if (gridManager == null || pathFinder == null || gameWon) 
+        if (gridManager == null || pathFinder == null || gameWon)
             return;
 
         RaycastFunc();
@@ -68,16 +69,21 @@ public class UnitController : MonoBehaviour
     {
         Debug.Log("You Win!");
         panelWin.SetActive(true);
-        gameWon = true; 
+        gameWon = true;
         cameraControlAndroid.freeLookCamera.enabled = false;
+
+        int currentLevel = SceneManager.GetActiveScene().buildIndex;
+        PlayerPrefs.SetInt("CurrentLevel", currentLevel);
+        PlayerPrefs.SetInt("UnlockedLevel", currentLevel + 1);
+        PlayerPrefs.Save();
     }
 
     void TriggerLoseCondition()
     {
         Debug.Log("You Lose!");
         panelGameOver.SetActive(true);
-        gameWon = true; 
-        cameraControlAndroid.freeLookCamera.enabled = false; 
+        gameWon = true;
+        cameraControlAndroid.freeLookCamera.enabled = false;
     }
 
     public void RaycastFunc()
@@ -91,7 +97,7 @@ public class UnitController : MonoBehaviour
             {
                 if (hit.transform.CompareTag("tile") || hit.transform.CompareTag("tp"))
                 {
-                    if (unitSelected && !gameWon) // Check game win status
+                    if (unitSelected && !gameWon) 
                     {
                         Vector2Int targetCords = hit.transform.GetComponent<Tile>().cords;
                         currentTile = hit.transform.gameObject;
@@ -153,7 +159,7 @@ public class UnitController : MonoBehaviour
 
     IEnumerator FollowPath()
     {
-        if (selectedUnit == null || gameWon) 
+        if (selectedUnit == null || gameWon)
             yield break;
 
         for (int i = 1; i < path.Count; i++)

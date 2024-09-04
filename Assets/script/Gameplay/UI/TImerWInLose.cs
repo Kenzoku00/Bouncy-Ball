@@ -34,11 +34,11 @@ public class TimeWinLose : MonoBehaviour
         }
 
         fillImage.fillAmount = 0;
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene(1);
     }
 
     private void OnReturnToMenuButtonPressed()
     {
-        SceneManager.LoadScene(0); 
+        SceneManager.LoadScene(1); 
     }
 }

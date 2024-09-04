@@ -5,9 +5,9 @@ using UnityEngine.SceneManagement;
 
 public class LevelSelector : MonoBehaviour
 {
-    public RectTransform[] levelSections; // Array untuk menyimpan RectTransform setiap bagian level
-    public float moveDuration = 0.5f; // Durasi pergerakan
-    private int currentSectionIndex = 0; // Indeks bagian level yang sedang ditampilkan
+    public RectTransform[] levelSections; 
+    public float moveDuration = 0.5f; 
+    private int currentSectionIndex = 0;
     public string mainMenuSceneName = "YonMainMenu";
 
     public Button nextButton;
@@ -15,7 +15,6 @@ public class LevelSelector : MonoBehaviour
 
     void Start()
     {
-        // Set posisi awal dari setiap bagian level
         for (int i = 0; i < levelSections.Length; i++)
         {
             levelSections[i].anchoredPosition = new Vector2(Screen.width * i, 0);
@@ -44,7 +43,6 @@ public class LevelSelector : MonoBehaviour
 
     void MoveToSection(int sectionIndex)
     {
-        // Pindahkan semua bagian level ke kiri untuk menunjukkan bagian yang diinginkan
         for (int i = 0; i < levelSections.Length; i++)
         {
             float targetX = (i - sectionIndex) * Screen.width;
@@ -56,7 +54,6 @@ public class LevelSelector : MonoBehaviour
 
     void UpdateButtons()
     {
-        // Update status tombol Next dan Back
         nextButton.interactable = currentSectionIndex < levelSections.Length - 1;
         backButton.interactable = currentSectionIndex > 0;
     }
