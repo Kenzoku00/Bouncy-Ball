@@ -18,9 +18,12 @@ EditorBuildSettings:
     path: Assets/Scenes/YonMainMenu.unity
     guid: 3b35d62327db13241b9b83038df40fb7
   - enabled: 1
-    path: Assets/Scenes/LevelSelector.unity
-    guid: 4d1d478f6e579fb44b74ac5b247e8bc7
+    path: Assets/Scenes/Level Selector pangkat dua.unity
+    guid: bccd67188808c68498bc8005d4bc8164
   - enabled: 1
     path: Assets/Scenes/YonLevel/Level 1.unity
     guid: 0ad6aa868fb65c1479726b264ae4defc
+  - enabled: 0
+    path: Assets/Scenes/LevelSelector.unity
+    guid: 4d1d478f6e579fb44b74ac5b247e8bc7
   m_configObjects: {}

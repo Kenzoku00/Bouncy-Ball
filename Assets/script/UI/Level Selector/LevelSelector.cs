@@ -1,55 +1,69 @@
 using UnityEngine;
+using UnityEngine.UI;
 using DG.Tweening;
+using UnityEngine.SceneManagement;
 
 public class LevelSelector : MonoBehaviour
 {
-    public GameObject popupPrefab;  // Assign the popup prefab here
-    private GameObject activePopup;
+    public RectTransform[] levelSections; // Array untuk menyimpan RectTransform setiap bagian level
+    public float moveDuration = 0.5f; // Durasi pergerakan
+    private int currentSectionIndex = 0; // Indeks bagian level yang sedang ditampilkan
+    public string mainMenuSceneName = "YonMainMenu";
+
+    public Button nextButton;
+    public Button backButton;
 
     void Start()
     {
-        // Add click handler to each level cube in the scene
-        foreach (Transform levelCube in transform)
+        // Set posisi awal dari setiap bagian level
+        for (int i = 0; i < levelSections.Length; i++)
         {
-            // Make sure the level cube has a collider component
-            if (levelCube.GetComponent<Collider>() == null)
-            {
-                levelCube.gameObject.AddComponent<BoxCollider>();
-            }
-
-            // Add the click handler script to the level cube
-            LevelCubeClickHandler clickHandler = levelCube.gameObject.AddComponent<LevelCubeClickHandler>();
-            clickHandler.Initialize(this);
+            levelSections[i].anchoredPosition = new Vector2(Screen.width * i, 0);
         }
+
+        UpdateButtons();
     }
 
-    public void OnLevelCubeClicked(Vector3 position)
+    public void OnNextButton()
     {
-        // Destroy any existing popup
-        if (activePopup != null)
+        if (currentSectionIndex < levelSections.Length - 1)
         {
-            Destroy(activePopup);
+            currentSectionIndex++;
+            MoveToSection(currentSectionIndex);
         }
-
-        // Instantiate a new popup at the clicked cube's position
-        activePopup = Instantiate(popupPrefab, position, Quaternion.identity);
-        activePopup.transform.SetParent(transform, false);
-
-        // Ensure the popup is active
-        activePopup.SetActive(true);
-
-        // Adjust the size and position of the popup if necessary
-        RectTransform rectTransform = activePopup.GetComponent<RectTransform>();
-        if (rectTransform != null)
-        {
-            // Adjust the size of the popup
-            rectTransform.sizeDelta = new Vector2(200, 100); // Set desired width and height
-            rectTransform.anchoredPosition = Vector2.zero; // Center the popup
-        }
-
-        // Animate the popup
-        activePopup.transform.localScale = Vector3.zero;
-        activePopup.transform.DOScale(Vector3.one, 0.3f).SetEase(Ease.OutBack);
     }
 
+    public void OnBackButton()
+    {
+        if (currentSectionIndex > 0)
+        {
+            currentSectionIndex--;
+            MoveToSection(currentSectionIndex);
+        }
+    }
+
+    void MoveToSection(int sectionIndex)
+    {
+        // Pindahkan semua bagian level ke kiri untuk menunjukkan bagian yang diinginkan
+        for (int i = 0; i < levelSections.Length; i++)
+        {
+            float targetX = (i - sectionIndex) * Screen.width;
+            levelSections[i].DOAnchorPosX(targetX, moveDuration);
+        }
+
+        UpdateButtons();
+    }
+
+    void UpdateButtons()
+    {
+        // Update status tombol Next dan Back
+        nextButton.interactable = currentSectionIndex < levelSections.Length - 1;
+        backButton.interactable = currentSectionIndex > 0;
+    }
+
+    public void OnCloseButton()
+    {
+        Debug.Log("Sudah di click le");
+        SceneManager.LoadScene(0);
+    }
 }
