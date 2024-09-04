@@ -1,189 +1,98 @@
-// using UnityEngine;
+using UnityEngine;
 
-// public class StoneController : MonoBehaviour
-// {
-//     [SerializeField] private Material hoverMaterial;
-//     [SerializeField] private Material defaultMaterial;
-//     [SerializeField] private CameraControl cameraControl;
+public class StoneController : MonoBehaviour
+{
+    [SerializeField] private int maxMoves = 3; // Maksimal gerakan sebelum berbalik arah
+    [SerializeField] private float moveDistance = 1f; // Jarak yang ditempuh setiap kali bergerak
+    [SerializeField] private bool moveHorizontally = true; // Mengatur apakah bergerak di sumbu X (true) atau sumbu Z (false)
+    [SerializeField] private bool movingRightOrForward = true; // Mengatur apakah bergerak ke kanan/depan (true) atau ke kiri/belakang (false)
 
-//     [SerializeField] private float moveSpeed = 5f;
-//     [SerializeField] private bool sudahSampai;
+    private int currentMoves = 0; // Jumlah gerakan saat ini
+    private Vector3 initialPosition; // Posisi awal batu
+    private Vector3 targetPosition; // Posisi target batu
 
-//     private Vector3 offset;
-//     private bool isDragging = false;
-//     private PipeController currentPipe;
-//     private Renderer stoneRenderer;
-//     private Vector3 targetPosition;
-//     private bool isMoving = false;
+    private void Start()
+    {
+        initialPosition = transform.position; // Simpan posisi awal
+        targetPosition = initialPosition; // Atur posisi target awal
+    }
 
-//     private void Awake()
-//     {
-//         stoneRenderer = GetComponent<Renderer>();
-//         if (stoneRenderer != null)
-//         {
-//             stoneRenderer.material = defaultMaterial;
-//         }
-//     }
+    private void Update()
+    {
+        // Deteksi input dari layar sentuh untuk Android
+        if (Input.touchCount > 0)
+        {
+            Touch touch = Input.GetTouch(0);
 
-//     private void OnMouseEnter()
-//     {
-//         if (!isDragging && cameraControl != null)
-//         {
-//             cameraControl.SetCameraActive(false);
-//         }
+            if (touch.phase == TouchPhase.Began && IsTouchingStone(touch.position))
+            {
+                MoveStone();
+            }
+        }
+    }
 
-//         if (stoneRenderer != null && hoverMaterial != null)
-//         {
-//             stoneRenderer.material = hoverMaterial;
-//         }
-//     }
+    private void MoveStone()
+    {
+        if (currentMoves < maxMoves)
+        {
+            // Update posisi target sesuai arah gerakan
+            float direction = movingRightOrForward ? 1f : -1f;
+            if (moveHorizontally)
+            {
+                targetPosition += new Vector3(direction * moveDistance, 0, 0); // Gerak horizontal di sumbu X
+            }
+            else
+            {
+                targetPosition += new Vector3(0, 0, direction * moveDistance); // Gerak vertikal di sumbu Z
+            }
 
-//     private void OnMouseExit()
-//     {
-//         if (!isDragging && cameraControl != null)
-//         {
-//             cameraControl.SetCameraActive(true);
-//         }
+            // Tambah jumlah gerakan yang telah dilakukan
+            currentMoves++;
+            Debug.Log($"Move {currentMoves}: Batu bergerak {(movingRightOrForward ? (moveHorizontally ? "ke kanan" : "ke depan") : (moveHorizontally ? "ke kiri" : "ke belakang"))}");
+        }
+        else
+        {
+            // Balik arah gerakan dan lanjutkan gerakan 1 blok ke arah yang berlawanan
+            movingRightOrForward = !movingRightOrForward;
+            currentMoves = 1; // Set ke 1 karena akan memulai kembali dari arah berlawanan
 
-//         if (!isDragging && stoneRenderer != null && defaultMaterial != null)
-//         {
-//             stoneRenderer.material = defaultMaterial;
-//         }
-//     }
+            // Update posisi target untuk arah baru (bergerak 1 blok ke arah berlawanan)
+            float direction = movingRightOrForward ? 1f : -1f;
+            if (moveHorizontally)
+            {
+                targetPosition += new Vector3(direction * moveDistance, 0, 0); // Gerak horizontal di sumbu X
+            }
+            else
+            {
+                targetPosition += new Vector3(0, 0, direction * moveDistance); // Gerak vertikal di sumbu Z
+            }
 
-//     private void OnMouseDown()
-//     {
-//         offset = transform.position - GetMouseWorldPosition();
-//         isDragging = true;
-//         currentPipe = GetComponentInParent<PipeController>();
+            Debug.Log($"Batu berbalik arah: {(movingRightOrForward ? (moveHorizontally ? "ke kanan" : "ke depan") : (moveHorizontally ? "ke kiri" : "ke belakang"))}");
+        }
 
-//         if (stoneRenderer != null && hoverMaterial != null)
-//         {
-//             stoneRenderer.material = hoverMaterial;
-//         }
+        StartCoroutine(MoveToTargetPosition());
+    }
 
-//         if (cameraControl != null)
-//         {
-//             cameraControl.SetCameraActive(false);
-//         }
-//     }
+    private System.Collections.IEnumerator MoveToTargetPosition()
+    {
+        // Gerakkan batu ke posisi target
+        while (Vector3.Distance(transform.position, targetPosition) > 0.01f)
+        {
+            transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * 3f);
+            yield return null;
+        }
+        transform.position = targetPosition;
+    }
 
-//     private void OnMouseUp()
-//     {
-//         isDragging = false;
+    private bool IsTouchingStone(Vector2 touchPosition)
+    {
+        Ray ray = Camera.main.ScreenPointToRay(touchPosition);
+        RaycastHit hit;
 
-//         if (cameraControl != null)
-//         {
-//             cameraControl.SetCameraActive(true);
-//         }
-
-//         if (stoneRenderer != null && defaultMaterial != null)
-//         {
-//             stoneRenderer.material = defaultMaterial;
-//         }
-//     }
-
-//     private void Update()
-//     {
-//         if (isDragging && currentPipe != null)
-//         {
-//             Vector3 mousePosition = GetMouseWorldPosition() + offset;
-//             Vector3 pipeCenter = currentPipe.GetPipeCenter();
-//             float pipeLength = currentPipe.GetPipeLength() / 2;
-
-//             Vector3 newPosition;
-//             if (currentPipe.IsHorizontalX)
-//             {
-//                 float clampedX = Mathf.Clamp(mousePosition.x, pipeCenter.x - pipeLength, pipeCenter.x + pipeLength);
-//                 newPosition = new Vector3(clampedX, transform.position.y, transform.position.z);
-//             }
-//             else if (currentPipe.IsHorizontalZ)
-//             {
-//                 float clampedZ = Mathf.Clamp(mousePosition.z, pipeCenter.z - pipeLength, pipeCenter.z + pipeLength);
-//                 newPosition = new Vector3(transform.position.x, transform.position.y, clampedZ);
-//             }
-//             else if (currentPipe.IsVertical)
-//             {
-//                 float clampedY = Mathf.Clamp(mousePosition.y, pipeCenter.y - pipeLength, pipeCenter.y + pipeLength);
-//                 newPosition = new Vector3(transform.position.x, clampedY, transform.position.z);
-//             }
-//             else
-//             {
-//                 return;
-//             }
-
-//             targetPosition = newPosition;
-//             isMoving = true;
-
-//             UpdateSudahSampai();
-//         }
-
-//         if (isMoving)
-//         {
-//             transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * moveSpeed);
-
-//             // Update 'sudahSampai' continuously as the stone approaches the target position
-//             UpdateSudahSampai();
-
-//             if (Vector3.Distance(transform.position, targetPosition) < 0.01f)
-//             {
-//                 isMoving = false;
-//             }
-//         }
-//     }
-
-//     private void UpdateSudahSampai()
-//     {
-//         if (currentPipe == null)
-//             return;
-
-//         Vector3 pipeCenter = currentPipe.GetPipeCenter();
-//         float pipeLength = currentPipe.GetPipeLength() / 2;
-
-//         bool edgeReached = false;
-//         float threshold = 0.05f; // Small threshold value for better precision
-
-//         if (currentPipe.IsHorizontalX)
-//         {
-//             edgeReached = Mathf.Abs(transform.position.x - (pipeCenter.x - pipeLength)) < threshold ||
-//                           Mathf.Abs(transform.position.x - (pipeCenter.x + pipeLength)) < threshold;
-//         }
-//         else if (currentPipe.IsHorizontalZ)
-//         {
-//             edgeReached = Mathf.Abs(transform.position.z - (pipeCenter.z - pipeLength)) < threshold ||
-//                           Mathf.Abs(transform.position.z - (pipeCenter.z + pipeLength)) < threshold;
-//         }
-//         else if (currentPipe.IsVertical)
-//         {
-//             edgeReached = Mathf.Abs(transform.position.y - (pipeCenter.y - pipeLength)) < threshold ||
-//                           Mathf.Abs(transform.position.y - (pipeCenter.y + pipeLength)) < threshold;
-//         }
-
-//         if (edgeReached)
-//         {
-//             if (!sudahSampai)
-//             {
-//                 sudahSampai = true;
-//                 Debug.Log("Bola sudah sampai");
-//             }
-//         }
-//         else
-//         {
-//             if (sudahSampai)
-//             {
-//                 sudahSampai = false;
-//                 Debug.Log("Bola belum sampai");
-//             }
-//         }
-//     }
-
-
-
-
-//     private Vector3 GetMouseWorldPosition()
-//     {
-//         Vector3 mousePoint = Input.mousePosition;
-//         mousePoint.z = Camera.main.WorldToScreenPoint(transform.position).z;
-//         return Camera.main.ScreenToWorldPoint(mousePoint);
-//     }
-// }
+        if (Physics.Raycast(ray, out hit))
+        {
+            return hit.transform == transform;
+        }
+        return false;
+    }
+}
