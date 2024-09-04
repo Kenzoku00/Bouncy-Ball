@@ -1,0 +1,88 @@
+{
+    "skins": [
+        {
+            "name": "",
+            "description": "",
+            "ID": 1,
+            "price": 0,
+            "ballImage": {
+                "instanceID": 0
+            },
+            "material": {
+                "instanceID": 0
+            }
+        },
+        {
+            "name": "",
+            "description": "",
+            "ID": 2,
+            "price": 0,
+            "ballImage": {
+                "instanceID": 0
+            },
+            "material": {
+                "instanceID": 0
+            }
+        },
+        {
+            "name": "",
+            "description": "",
+            "ID": 3,
+            "price": 0,
+            "ballImage": {
+                "instanceID": 0
+            },
+            "material": {
+                "instanceID": 0
+            }
+        },
+        {
+            "name": "",
+            "description": "",
+            "ID": 4,
+            "price": 0,
+            "ballImage": {
+                "instanceID": 0
+            },
+            "material": {
+                "instanceID": 0
+            }
+        },
+        {
+            "name": "",
+            "description": "",
+            "ID": 5,
+            "price": 0,
+            "ballImage": {
+                "instanceID": 0
+            },
+            "material": {
+                "instanceID": 0
+            }
+        },
+        {
+            "name": "",
+            "description": "",
+            "ID": 6,
+            "price": 0,
+            "ballImage": {
+                "instanceID": 0
+            },
+            "material": {
+                "instanceID": 0
+            }
+        },
+        {
+            "name": "",
+            "description": "",
+            "ID": 7,
+            "price": 0,
+            "ballImage": {
+                "instanceID": 0
+            },
+            "material": {
+                "instanceID": 0
+            }
+        }
+    ]
+}

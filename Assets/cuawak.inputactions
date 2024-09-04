@@ -1,0 +1,45 @@
+{
+    "name": "cuawak",
+    "maps": [
+        {
+            "name": "gerak",
+            "id": "fe49a47a-cd83-4a5f-8157-9a7944012fb6",
+            "actions": [
+                {
+                    "name": "New action",
+                    "type": "Button",
+                    "id": "62ab1d45-425d-4009-a810-b25ebf5ef9f2",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "9ab88bd4-e404-4cda-bdfb-40de338f6e7a",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "New action",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "74cb763c-1ed6-4d21-97cd-1ce04f58e931",
+                    "path": "<Touchscreen>/primaryTouch/tap",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "New action",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}

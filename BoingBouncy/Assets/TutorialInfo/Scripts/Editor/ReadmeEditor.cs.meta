@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+<<<<<<<< HEAD:BoingBouncy/Assets/TutorialInfo/Scripts/Editor/ReadmeEditor.cs.meta
+guid: 476cc7d7cd9874016adc216baab94a0a
+timeCreated: 1484146680
+licenseType: Store
+========
+guid: 2e46db5b82afa914db25fc38e8bbae35
+>>>>>>>> 66b0fe1f0156d94d32d7536c6cafb0317d88475d:Assets/script/Tile.cs.meta
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
