@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Tile : MonoBehaviour
@@ -18,6 +19,8 @@ public class Tile : MonoBehaviour
         if(blocked)
         {
             gridManager.BlockNode(cords);
+            List<BoxCollider> boxCollider = gameObject.GetComponents<BoxCollider>().ToList();
+            boxCollider.ForEach(col => col.enabled = false);
         }
     }
 
