@@ -1,6 +1,6 @@
 using UnityEngine;
-using UnityEngine.UI; // Untuk Button dan ColorBlock
-using UnityEngine.SceneManagement; // Untuk SceneManager, Scene, dan LoadSceneMode
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class LevelUnlockManager : MonoBehaviour
 {
@@ -9,15 +9,12 @@ public class LevelUnlockManager : MonoBehaviour
 
     private void Start()
     {
-        Debug.Log("Scene started, checking if game is paused.");
-        Debug.Log("Current Time.timeScale: " + Time.timeScale);
         LoadLevelUnlocks();
         UpdateLevelButtons();
     }
 
     private void OnEnable()
     {
-        // Add this if you need to assign buttons on scene load
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
@@ -28,19 +25,34 @@ public class LevelUnlockManager : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // Re-assign references to levelButtons if needed
         levelButtons = GameObject.Find("LevelButtonsContainer").GetComponentsInChildren<Button>();
         UpdateLevelButtons();
     }
 
     public void UnlockNextLevel()
     {
-        if (unlockedLevelIndex < levelButtons.Length - 1)
+        string currentSceneName = SceneManager.GetActiveScene().name;
+        int currentLevelIndex = GetLevelIndexFromSceneName(currentSceneName);
+
+        if (currentLevelIndex >= 0 && currentLevelIndex < levelButtons.Length - 1)
         {
-            unlockedLevelIndex++;
+            unlockedLevelIndex = currentLevelIndex + 1;
             PlayerPrefs.SetInt("UnlockedLevel", unlockedLevelIndex);
             UpdateLevelButtons();
         }
+    }
+
+    private int GetLevelIndexFromSceneName(string sceneName)
+    {
+        if (sceneName.StartsWith("Level "))
+        {
+            string levelNumberStr = sceneName.Substring("Level ".Length);
+            if (int.TryParse(levelNumberStr, out int levelNumber))
+            {
+                return levelNumber - 1; 
+            }
+        }
+        return -1;
     }
 
     private void UpdateLevelButtons()

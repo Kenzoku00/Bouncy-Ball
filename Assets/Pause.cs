@@ -14,7 +14,7 @@ public class Pause : MonoBehaviour
     }
     public void Quit()
     {
-        SceneManager.LoadScene("YonMainMenu");
+        SceneManager.LoadScene("Level Selector pangkat dua");
         Time.timeScale = 1;
     }
     public void Resume()
