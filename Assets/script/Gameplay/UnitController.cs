@@ -72,9 +72,12 @@ public class UnitController : MonoBehaviour
         gameWon = true;
         cameraControlAndroid.freeLookCamera.enabled = false;
 
+        // Unlock the next level
+        FindObjectOfType<LevelUnlockManager>()?.UnlockNextLevel();
+
+        // Simpan level yang terbuka ke PlayerPrefs
         int currentLevel = SceneManager.GetActiveScene().buildIndex;
         PlayerPrefs.SetInt("CurrentLevel", currentLevel);
-        PlayerPrefs.SetInt("UnlockedLevel", currentLevel + 1);
         PlayerPrefs.Save();
     }
 

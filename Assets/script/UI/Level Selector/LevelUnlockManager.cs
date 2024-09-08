@@ -1,29 +1,35 @@
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.UI; // Untuk Button dan ColorBlock
+using UnityEngine.SceneManagement; // Untuk SceneManager, Scene, dan LoadSceneMode
 
 public class LevelUnlockManager : MonoBehaviour
 {
-    public static LevelUnlockManager Instance;
-
     [SerializeField] private Button[] levelButtons;
     private int unlockedLevelIndex = 0;
 
-    private void Awake()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }
-
     private void Start()
     {
+        Debug.Log("Scene started, checking if game is paused.");
+        Debug.Log("Current Time.timeScale: " + Time.timeScale);
         LoadLevelUnlocks();
+        UpdateLevelButtons();
+    }
+
+    private void OnEnable()
+    {
+        // Add this if you need to assign buttons on scene load
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // Re-assign references to levelButtons if needed
+        levelButtons = GameObject.Find("LevelButtonsContainer").GetComponentsInChildren<Button>();
         UpdateLevelButtons();
     }
 
@@ -63,7 +69,6 @@ public class LevelUnlockManager : MonoBehaviour
             }
         }
 
-        // Debugging output
         Debug.Log("Updated level buttons:");
         foreach (var button in levelButtons)
         {
@@ -88,22 +93,5 @@ public class LevelUnlockManager : MonoBehaviour
     private void LoadLevelUnlocks()
     {
         unlockedLevelIndex = PlayerPrefs.GetInt("UnlockedLevel", 0);
-    }
-
-    // Debugging method
-    private void OnEnable()
-    {
-        Debug.Log("LevelUnlockManager enabled.");
-        if (levelButtons != null)
-        {
-            foreach (var button in levelButtons)
-            {
-                Debug.Log($"Button assigned: {button.name}");
-            }
-        }
-        else
-        {
-            Debug.Log("Level buttons array is null.");
-        }
     }
 }
