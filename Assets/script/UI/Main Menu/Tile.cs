@@ -15,15 +15,12 @@ public class Tile : MonoBehaviour
     void Start()
     {
         SetCords();
-        List<BoxCollider> boxCollider = gameObject.GetComponents<BoxCollider>().ToList();
 
         if(blocked)
         {
-            gridManager.BlockNode(cords);   
+            gridManager.BlockNode(cords);
+            List<BoxCollider> boxCollider = gameObject.GetComponents<BoxCollider>().ToList();
             boxCollider.ForEach(col => col.enabled = false);
-        }
-        else {
-            boxCollider.ForEach(col => col.enabled = true);
         }
     }
 
