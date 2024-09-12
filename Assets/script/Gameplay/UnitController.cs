@@ -15,7 +15,7 @@ public class UnitController : MonoBehaviour
     [SerializeField] Vector2Int movementBoundsMax = new Vector2Int(10, 10);
 
     Transform selectedUnit;
-    bool unitSelected = true;
+    bool unitSelected = false;
     private GameObject currentTile;
 
     List<Node> path = new List<Node>();
@@ -48,7 +48,6 @@ public class UnitController : MonoBehaviour
         }
 
         updateText();
-        Debug.Log(unitSelected);
     }
 
     void Update()
@@ -134,6 +133,7 @@ public class UnitController : MonoBehaviour
                 {
                     selectedUnit = hit.transform;
                     unitSelected = true;
+                    Debug.Log("Unit was clicked.");
                 }
             }
         }
