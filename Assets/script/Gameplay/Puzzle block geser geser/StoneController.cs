@@ -28,10 +28,10 @@ public class StoneController : MonoBehaviour
         targetPosition = initialPosition;
         directionObjectMap = new Dictionary<Vector3, GameObject>
         {
-            { transform.forward, objectA },
-            { -transform.forward, objectB },
-            { transform.right, objectC },
-            { -transform.right, objectD }
+            { Vector3.forward, objectA },
+            { Vector3.back, objectB },
+            { Vector3.right, objectC },
+            { Vector3.left, objectD }
         };
     }
 
@@ -107,14 +107,33 @@ public class StoneController : MonoBehaviour
         StartCoroutine(MoveToTargetPosition());
     }
 
-    private System.Collections.IEnumerator MoveToTargetPosition()
+    private IEnumerator MoveToTargetPosition()
     {
-        while (Vector3.Distance(transform.position, targetPosition) > 0.01f)
-        {
-            transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * 3f);
-            yield return null;
-        }
-        transform.position = targetPosition;
+    Vector3 initialPositionA = objectA.transform.position;
+    Vector3 initialPositionB = objectB.transform.position;
+    Vector3 initialPositionC = objectC.transform.position;
+    Vector3 initialPositionD = objectD.transform.position;
+    
+    Vector3 stoneStartPosition = transform.position;
+    
+    while (Vector3.Distance(transform.position, targetPosition) > 0.01f)
+    {
+        float step = Time.deltaTime * 3f;
+        transform.position = Vector3.Lerp(stoneStartPosition, targetPosition, step);
+
+        objectA.transform.position = Vector3.Lerp(initialPositionA, targetPosition + (objectA.transform.position - stoneStartPosition), step);
+        objectB.transform.position = Vector3.Lerp(initialPositionB, targetPosition + (objectB.transform.position - stoneStartPosition), step);
+        objectC.transform.position = Vector3.Lerp(initialPositionC, targetPosition + (objectC.transform.position - stoneStartPosition), step);
+        objectD.transform.position = Vector3.Lerp(initialPositionD, targetPosition + (objectD.transform.position - stoneStartPosition), step);
+
+        yield return null;
+    }
+
+    transform.position = targetPosition;
+    objectA.transform.position = targetPosition + (objectA.transform.position - stoneStartPosition);
+    objectB.transform.position = targetPosition + (objectB.transform.position - stoneStartPosition);
+    objectC.transform.position = targetPosition + (objectC.transform.position - stoneStartPosition);
+    objectD.transform.position = targetPosition + (objectD.transform.position - stoneStartPosition);
     }
 
     private bool IsTouchingStone(Vector2 touchPosition)
