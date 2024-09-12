@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.12731749, g: 0.13414757, b: 0.1210787, a: 1}
+  m_IndirectSpecularColor: {r: 0.12731715, g: 0.13414735, b: 0.121078536, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -14412,7 +14412,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eddb41404301d6045b56b2aac7396c1e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameraControlAndroid: {fileID: 0}
+  cameraControlAndroid: {fileID: 429794675}
   fillImage: {fileID: 1309908834}
   fillDuration: 10
   returnToMenuButton: {fileID: 1706911390}
@@ -18230,7 +18230,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eddb41404301d6045b56b2aac7396c1e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameraControlAndroid: {fileID: 0}
+  cameraControlAndroid: {fileID: 429794675}
   fillImage: {fileID: 738281580}
   fillDuration: 10
   returnToMenuButton: {fileID: 1322346772}

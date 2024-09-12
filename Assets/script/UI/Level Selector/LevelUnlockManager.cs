@@ -1,16 +1,35 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System.Linq;
 
 public class LevelUnlockManager : MonoBehaviour
 {
+    public static LevelUnlockManager Instance {  get; private set; }
+
     [SerializeField] private Button[] levelButtons;
     private int unlockedLevelIndex = 0;
+    private int buttonLength;
+
+
+    private void Awake()
+    {
+        if (Instance != null) Destroy(gameObject);
+        else {         
+            DontDestroyOnLoad(gameObject);
+            Instance = this;
+        }
+
+    }
 
     private void Start()
     {
         LoadLevelUnlocks();
         UpdateLevelButtons();
+
+        int unlockedLevelIndex = PlayerPrefs.GetInt("UnlockedLevel", 0);
+        Debug.Log("Level terakhir yang terbuka adalah: " + (unlockedLevelIndex + 1));
+
     }
 
     private void OnEnable()
@@ -25,17 +44,23 @@ public class LevelUnlockManager : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        levelButtons = GameObject.Find("LevelButtonsContainer").GetComponentsInChildren<Button>();
-        UpdateLevelButtons();
+        if (SceneManager.GetActiveScene().name == "Level Selector pangkat dua")
+        {
+            levelButtons = GameObject.Find("LevelButtonsContainer").GetComponentsInChildren<Button>();
+            buttonLength = levelButtons.Length;
+            UpdateLevelButtons();
+        }
+        else levelButtons = new Button[0];
     }
 
     public void UnlockNextLevel()
     {
-        string currentSceneName = SceneManager.GetActiveScene().name;
-        int currentLevelIndex = GetLevelIndexFromSceneName(currentSceneName);
+        int currentLevelIndex = GetLevelIndexFromSceneName(SceneManager.GetActiveScene().name);
+        Debug.Log(currentLevelIndex);
 
-        if (currentLevelIndex >= 0 && currentLevelIndex < levelButtons.Length - 1)
+        if (currentLevelIndex >= 0 && currentLevelIndex < buttonLength - 1)
         {
+            Debug.Log("Kentir");
             unlockedLevelIndex = currentLevelIndex + 1;
             PlayerPrefs.SetInt("UnlockedLevel", unlockedLevelIndex);
             UpdateLevelButtons();
