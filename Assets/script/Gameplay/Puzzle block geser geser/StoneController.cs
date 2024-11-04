@@ -10,13 +10,10 @@ public class StoneController : MonoBehaviour
     [SerializeField] private bool movingRightOrForward = true;
     [SerializeField] private float detectionDistance = 1f;
     [SerializeField] private LayerMask detectionLayer;
-
     [SerializeField] private GameObject objectA;
-    [SerializeField] private GameObject objectB;
-    [SerializeField] private GameObject objectC;
-    [SerializeField] private GameObject objectD;
-
-    private Dictionary<Vector3, GameObject> directionObjectMap;
+    [SerializeField] private GameObject object1;
+    [SerializeField] private GameObject object2;
+    [SerializeField] private GameObject object3;
 
     private int currentMoves = 0;
     private Vector3 initialPosition;
@@ -26,19 +23,11 @@ public class StoneController : MonoBehaviour
     {
         initialPosition = transform.position;
         targetPosition = initialPosition;
-        directionObjectMap = new Dictionary<Vector3, GameObject>
-        {
-            { Vector3.forward, objectA },
-            { Vector3.back, objectB },
-            { Vector3.right, objectC },
-            { Vector3.left, objectD }
-        };
     }
 
     private void Update()
     {
-        DetectSurroundings();
-
+        DetectOverlapBoxes();
         if (Input.touchCount > 0)
         {
             Touch touch = Input.GetTouch(0);
@@ -49,25 +38,32 @@ public class StoneController : MonoBehaviour
             }
         }
     }
-    private void DetectSurroundings()
+        private void DetectOverlapBoxes()
     {
-        foreach (KeyValuePair<Vector3, GameObject> entry in directionObjectMap)
-        {
-            Vector3 direction = entry.Key;
-            GameObject targetObject = entry.Value;
+        DetectOverlapBoxForObject(object1);
+        DetectOverlapBoxForObject(object2);
+        DetectOverlapBoxForObject(object3);
+    }
+    private void DetectOverlapBoxForObject(GameObject obj)
+    {
+        Vector3 boxSize = obj.transform.localScale; 
+        Vector3 boxCenter = obj.transform.position; 
 
-            if (Physics.Raycast(transform.position, direction, detectionDistance, detectionLayer))
+        Collider[] colliders = Physics.OverlapBox(boxCenter, boxSize / 2, Quaternion.identity);
+
+        if (colliders.Length > 0)
+        {
+            Debug.Log($"{obj.name} mengalami tumpang tindih dengan {colliders.Length} objek lainnya.");
+            foreach (var collider in colliders)
             {
-                Debug.Log($"Objek terdeteksi di arah {direction}");
-                targetObject.SetActive(true);
-            }
-            else
-            {
-                targetObject.SetActive(false);
+                Debug.Log($"{collider.name} tumpang tindih dengan {obj.name}");
             }
         }
+        else
+        {
+            Debug.Log($"{obj.name} tidak mengalami tumpang tindih.");
+        }
     }
-
     private void MoveStone()
     {
         if (currentMoves < maxMoves)
@@ -109,10 +105,10 @@ public class StoneController : MonoBehaviour
 
     private IEnumerator MoveToTargetPosition()
     {
-    Vector3 initialPositionA = objectA.transform.position;
+    Vector3 initialPositionA = objectA.transform.position;/*
     Vector3 initialPositionB = objectB.transform.position;
     Vector3 initialPositionC = objectC.transform.position;
-    Vector3 initialPositionD = objectD.transform.position;
+    Vector3 initialPositionD = objectD.transform.position;*/
     
     Vector3 stoneStartPosition = transform.position;
     
@@ -121,19 +117,19 @@ public class StoneController : MonoBehaviour
         float step = Time.deltaTime * 3f;
         transform.position = Vector3.Lerp(stoneStartPosition, targetPosition, step);
 
-        objectA.transform.position = Vector3.Lerp(initialPositionA, targetPosition + (objectA.transform.position - stoneStartPosition), step);
-        objectB.transform.position = Vector3.Lerp(initialPositionB, targetPosition + (objectB.transform.position - stoneStartPosition), step);
+        objectA.transform.position = Vector3.Lerp(initialPositionA, targetPosition, step);
+        /*objectB.transform.position = Vector3.Lerp(initialPositionB, targetPosition + (objectB.transform.position - stoneStartPosition), step);
         objectC.transform.position = Vector3.Lerp(initialPositionC, targetPosition + (objectC.transform.position - stoneStartPosition), step);
-        objectD.transform.position = Vector3.Lerp(initialPositionD, targetPosition + (objectD.transform.position - stoneStartPosition), step);
+        objectD.transform.position = Vector3.Lerp(initialPositionD, targetPosition + (objectD.transform.position - stoneStartPosition), step);*/
 
         yield return null;
     }
 
     transform.position = targetPosition;
-    objectA.transform.position = targetPosition + (objectA.transform.position - stoneStartPosition);
-    objectB.transform.position = targetPosition + (objectB.transform.position - stoneStartPosition);
+    objectA.transform.position = targetPosition;
+    /*objectB.transform.position = targetPosition + (objectB.transform.position - stoneStartPosition);
     objectC.transform.position = targetPosition + (objectC.transform.position - stoneStartPosition);
-    objectD.transform.position = targetPosition + (objectD.transform.position - stoneStartPosition);
+    objectD.transform.position = targetPosition + (objectD.transform.position - stoneStartPosition);*/
     }
 
     private bool IsTouchingStone(Vector2 touchPosition)

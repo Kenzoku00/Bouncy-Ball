@@ -16,6 +16,7 @@ public class UnitController : MonoBehaviour
 
     Transform selectedUnit;
     bool unitSelected = false;
+    bool isMoving;
     private GameObject currentTile;
 
     List<Node> path = new List<Node>();
@@ -89,6 +90,10 @@ public class UnitController : MonoBehaviour
 
     public void RaycastFunc()
     {
+        if (isMoving || gameWon)  
+        return; 
+
+
         if (Input.GetMouseButtonDown(0) || (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began))
         {
             Ray ray = Input.GetMouseButtonDown(0) ? Camera.main.ScreenPointToRay(Input.mousePosition) : Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
@@ -163,6 +168,9 @@ public class UnitController : MonoBehaviour
         if (selectedUnit == null || gameWon)
             yield break;
 
+        isMoving = true; 
+        
+
         for (int i = 1; i < path.Count; i++)
         {
             Vector3 endPosition = gridManager.GetPositionFromCoordinates(path[i].cords);
@@ -196,6 +204,8 @@ public class UnitController : MonoBehaviour
         {
             Debug.Log("Tp habis");
         }
+
+        isMoving = false;
     }
 
     bool IsWithinBounds(Vector2Int position)
@@ -209,4 +219,6 @@ public class UnitController : MonoBehaviour
         remainingMoves = maxMoves - moveCount;
         textRemainingMoves.text = remainingMoves.ToString();
     }
+
+    
 }
