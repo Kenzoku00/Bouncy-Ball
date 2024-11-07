@@ -73,11 +73,14 @@ public class Labeller : MonoBehaviour
         label.text = $"{cords.x}, {cords.y}";
     }
 
+
+    [ExecuteAlways]
     void ToggleLables()
     {
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            label.enabled = !label.IsActive();
-        }
+       if (Input.GetKeyDown(KeyCode.C))
+       {
+           label.enabled = !label.IsActive();
+        } 
+
     }
 }

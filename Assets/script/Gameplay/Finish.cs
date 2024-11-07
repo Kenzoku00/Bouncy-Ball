@@ -6,7 +6,7 @@ public class FinishTile : MonoBehaviour
     {
         if (other.CompareTag("unit"))
         {
-            // Menonaktifkan BoxCollider pada FinishTile
+           
             BoxCollider boxCollider = GetComponent<BoxCollider>();
             if (boxCollider != null)
             {
@@ -14,7 +14,7 @@ public class FinishTile : MonoBehaviour
                 Debug.Log("BoxCollider pada Finish Tile dinonaktifkan.");
             }
 
-            // Mengubah massa pada Rigidbody unit menjadi 9999
+           
             Rigidbody rb = other.GetComponent<Rigidbody>();
             if (rb != null)
             {

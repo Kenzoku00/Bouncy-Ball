@@ -1,25 +1,33 @@
 using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
 
 public class StoneController : MonoBehaviour
 {
-    [SerializeField] private int maxMoves = 3; // Maksimal gerakan sebelum berbalik arah
-    [SerializeField] private float moveDistance = 1f; // Jarak yang ditempuh setiap kali bergerak
-    [SerializeField] private bool moveHorizontally = true; // Mengatur apakah bergerak di sumbu X (true) atau sumbu Z (false)
-    [SerializeField] private bool movingRightOrForward = true; // Mengatur apakah bergerak ke kanan/depan (true) atau ke kiri/belakang (false)
+    [SerializeField] private int maxMoves = 3;
+    [SerializeField] private float moveDistance = 1f;
+    [SerializeField] private bool moveHorizontally = true;
+    [SerializeField] private bool movingRightOrForward = true;
+    [SerializeField] private float detectionDistance = 1f;
+    [SerializeField] private LayerMask detectionLayer;
+    [SerializeField] private GameObject objectA;
+    [SerializeField] private GameObject object1;
+    [SerializeField] private GameObject object2;
+    [SerializeField] private GameObject object3;
 
-    private int currentMoves = 0; // Jumlah gerakan saat ini
-    private Vector3 initialPosition; // Posisi awal batu
-    private Vector3 targetPosition; // Posisi target batu
+    private int currentMoves = 0;
+    private Vector3 initialPosition;
+    private Vector3 targetPosition;
 
     private void Start()
     {
-        initialPosition = transform.position; // Simpan posisi awal
-        targetPosition = initialPosition; // Atur posisi target awal
+        initialPosition = transform.position;
+        targetPosition = initialPosition;
     }
 
     private void Update()
     {
-        // Deteksi input dari layar sentuh untuk Android
+        DetectOverlapBoxes();
         if (Input.touchCount > 0)
         {
             Touch touch = Input.GetTouch(0);
@@ -30,41 +38,63 @@ public class StoneController : MonoBehaviour
             }
         }
     }
+        private void DetectOverlapBoxes()
+    {
+        DetectOverlapBoxForObject(object1);
+        DetectOverlapBoxForObject(object2);
+        DetectOverlapBoxForObject(object3);
+    }
+    private void DetectOverlapBoxForObject(GameObject obj)
+    {
+        Vector3 boxSize = obj.transform.localScale; 
+        Vector3 boxCenter = obj.transform.position; 
 
+        Collider[] colliders = Physics.OverlapBox(boxCenter, boxSize / 2, Quaternion.identity);
+
+        if (colliders.Length > 0)
+        {
+            Debug.Log($"{obj.name} mengalami tumpang tindih dengan {colliders.Length} objek lainnya.");
+            foreach (var collider in colliders)
+            {
+                Debug.Log($"{collider.name} tumpang tindih dengan {obj.name}");
+            }
+        }
+        else
+        {
+            Debug.Log($"{obj.name} tidak mengalami tumpang tindih.");
+        }
+    }
     private void MoveStone()
     {
         if (currentMoves < maxMoves)
         {
-            // Update posisi target sesuai arah gerakan
             float direction = movingRightOrForward ? 1f : -1f;
             if (moveHorizontally)
             {
-                targetPosition += new Vector3(direction * moveDistance, 0, 0); // Gerak horizontal di sumbu X
+                targetPosition += new Vector3(direction * moveDistance, 0, 0);
             }
             else
             {
-                targetPosition += new Vector3(0, 0, direction * moveDistance); // Gerak vertikal di sumbu Z
+                targetPosition += new Vector3(0, 0, direction * moveDistance);
             }
 
-            // Tambah jumlah gerakan yang telah dilakukan
+
             currentMoves++;
             Debug.Log($"Move {currentMoves}: Batu bergerak {(movingRightOrForward ? (moveHorizontally ? "ke kanan" : "ke depan") : (moveHorizontally ? "ke kiri" : "ke belakang"))}");
         }
         else
         {
-            // Balik arah gerakan dan lanjutkan gerakan 1 blok ke arah yang berlawanan
             movingRightOrForward = !movingRightOrForward;
-            currentMoves = 1; // Set ke 1 karena akan memulai kembali dari arah berlawanan
+            currentMoves = 1;
 
-            // Update posisi target untuk arah baru (bergerak 1 blok ke arah berlawanan)
             float direction = movingRightOrForward ? 1f : -1f;
             if (moveHorizontally)
             {
-                targetPosition += new Vector3(direction * moveDistance, 0, 0); // Gerak horizontal di sumbu X
+                targetPosition += new Vector3(direction * moveDistance, 0, 0);
             }
             else
             {
-                targetPosition += new Vector3(0, 0, direction * moveDistance); // Gerak vertikal di sumbu Z
+                targetPosition += new Vector3(0, 0, direction * moveDistance);
             }
 
             Debug.Log($"Batu berbalik arah: {(movingRightOrForward ? (moveHorizontally ? "ke kanan" : "ke depan") : (moveHorizontally ? "ke kiri" : "ke belakang"))}");
@@ -73,15 +103,33 @@ public class StoneController : MonoBehaviour
         StartCoroutine(MoveToTargetPosition());
     }
 
-    private System.Collections.IEnumerator MoveToTargetPosition()
+    private IEnumerator MoveToTargetPosition()
     {
-        // Gerakkan batu ke posisi target
-        while (Vector3.Distance(transform.position, targetPosition) > 0.01f)
-        {
-            transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * 3f);
-            yield return null;
-        }
-        transform.position = targetPosition;
+    Vector3 initialPositionA = objectA.transform.position;/*
+    Vector3 initialPositionB = objectB.transform.position;
+    Vector3 initialPositionC = objectC.transform.position;
+    Vector3 initialPositionD = objectD.transform.position;*/
+    
+    Vector3 stoneStartPosition = transform.position;
+    
+    while (Vector3.Distance(transform.position, targetPosition) > 0.01f)
+    {
+        float step = Time.deltaTime * 3f;
+        transform.position = Vector3.Lerp(stoneStartPosition, targetPosition, step);
+
+        objectA.transform.position = Vector3.Lerp(initialPositionA, targetPosition, step);
+        /*objectB.transform.position = Vector3.Lerp(initialPositionB, targetPosition + (objectB.transform.position - stoneStartPosition), step);
+        objectC.transform.position = Vector3.Lerp(initialPositionC, targetPosition + (objectC.transform.position - stoneStartPosition), step);
+        objectD.transform.position = Vector3.Lerp(initialPositionD, targetPosition + (objectD.transform.position - stoneStartPosition), step);*/
+
+        yield return null;
+    }
+
+    transform.position = targetPosition;
+    objectA.transform.position = targetPosition;
+    /*objectB.transform.position = targetPosition + (objectB.transform.position - stoneStartPosition);
+    objectC.transform.position = targetPosition + (objectC.transform.position - stoneStartPosition);
+    objectD.transform.position = targetPosition + (objectD.transform.position - stoneStartPosition);*/
     }
 
     private bool IsTouchingStone(Vector2 touchPosition)
